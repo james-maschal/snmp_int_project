@@ -2,6 +2,7 @@
 creating the index report. This report contains
 all interfaces that are port reclaim ready."""
 
+import os
 import json
 from jns_snmp_connect import snmp_connect
 from snmp_scan import dict_create
@@ -130,6 +131,12 @@ def index_json(index_report, config):
     to database."""
 
     json_obj = json.dumps(index_report, indent=4)
+
+    path_name = config["index_dir"]
+    path_state = os.path.exists(path_name)
+
+    if not path_state:
+        os.makedirs(config["index_dir"])
 
     with open(config["index_path"], 'w', encoding="UTF-8") as draft:
         print(json_obj, file=draft)

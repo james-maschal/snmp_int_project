@@ -18,11 +18,12 @@ def main():
     """Main logic."""
 
     config = configparser.ConfigParser()
-    config.read("/home/netmaschal/python/snmp_int_project/info.ini")
+    config.read("/[YOUR DIRECTORY HERE]/snmp_int_project/info.ini")
     config_v = {
         "log_path"      : str(config["file_path"]["log_path"]),
         "int_path"      : str(config["file_path"]["int_path"]),
         "index_path"    : str(config["file_path"]["index_path"]),
+        "index_dir"     : str(config["file_path"]["index_dir"]),
         "server_passwd" : str(config["sql_user"]["pass"]),
         "server_user"   : str(config["sql_user"]["name"]),
         "server_IP"     : str(config["sql_user"]["server"]),

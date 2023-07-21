@@ -1,6 +1,7 @@
 #Template .ini file for this program.
 
 [file_path]
+index_dir = /[YOUR DIRECTORY HERE]/snmp_int_project/index_names/
 index_path = /[YOUR DIRECTORY HERE]/snmp_int_project/index_names/index_report.json
 int_path = /[YOUR DIRECTORY HERE]/snmp_int_project/index_names/int_report.json
 log_path = /[YOUR DIRECTORY HERE]/log.txt
