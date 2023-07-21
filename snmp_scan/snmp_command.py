@@ -17,7 +17,7 @@ def snmp_init(config):
     interfaces that weren't previously marked zero.
     Finally it's sent to be output to a JSON file."""
 
-    with open(config["ini"][4], 'r', encoding="UTF-8") as draft:
+    with open(config["index_path"], 'r', encoding="UTF-8") as draft:
 
         index_dict = json.load(draft)
         desc_report = []
@@ -60,7 +60,7 @@ def stage_1(switch, config, switch_key, err_text):
     desc, status_1 = snmp_connect.snmp_table(
                                     switch,
                                     config,
-                                    config["ini"][2]
+                                    config["int_name"]
                                 )
     if status_1 and len(desc) > 0:
         desc_pretty, status_2 = dict_create.var_desc(
@@ -85,7 +85,7 @@ def desc_json(desc_report, config):
     "int_report.json" exists, and deletes it if so.
     """
 
-    path_name = config["ini"][5]
+    path_name = config["int_path"]
     path_state = os.path.exists(path_name)
 
     if path_state:
@@ -93,6 +93,6 @@ def desc_json(desc_report, config):
 
     json_obj = json.dumps(desc_report, indent=4)
 
-    with open(config["ini"][5], 'a', encoding="UTF-8") as draft:
+    with open(config["int_path"], 'a', encoding="UTF-8") as draft:
 
         print(json_obj, file=draft)

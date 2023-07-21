@@ -56,7 +56,7 @@ def stage_1(switch, config, log_text):
     z_vtable, status_1 = snmp_connect.snmp_table(
                                         switch,
                                         config,
-                                        config["ini"][3]
+                                        config["int_octet"]
                                     )
 
     if status_1 and len(z_vtable) > 0:
@@ -83,7 +83,7 @@ def stage_2(switch, config, z_dict, log_text):
     inter_dict, status_3 = snmp_connect.snmp_table(
                                             switch,
                                             config,
-                                            config["ini"][1]
+                                            config["int_desc"]
                                             )
 
     if status_3 and len(inter_dict) > 0:
@@ -131,7 +131,7 @@ def index_json(index_report, config):
 
     json_obj = json.dumps(index_report, indent=4)
 
-    with open(config["ini"][4], 'w', encoding="UTF-8") as draft:
+    with open(config["index_path"], 'w', encoding="UTF-8") as draft:
         print(json_obj, file=draft)
 
 
@@ -146,7 +146,7 @@ def uptime_check(switch, config):
     uptime, u_status = snmp_connect.snmp_table(
                                     switch,
                                     config,
-                                    config["ini"][6]
+                                    config["device_uptime"]
                                 )
 
     if u_status and len(uptime) > 0:

@@ -14,28 +14,26 @@ from sql_int import index_table
 from sql_int import final_table
 
 
-
 def main():
     """Main logic."""
 
     config = configparser.ConfigParser()
-    config.read("/[YOUR DIRECTORY HERE]/snmp_int_project/info.ini")
+    config.read("/home/netmaschal/python/snmp_int_project/info.ini")
     config_v = {
-        'ini' : [
-            str(config["oid"]["c_string"]),
-            str(config["oid"]["inter_desc"]),
-            str(config["oid"]["inter_name"]),
-            str(config["oid"]["inter_octet"]),
-            str(config["file_path"]["index_path"]),
-            str(config["file_path"]["int_path"]),
-            str(config["oid"]["uptime"]),
-            str(config["user"]["name"]),
-            str(config["user"]["pass"]),
-            str(config["file_path"]["log_path"])
-            ]
+        "log_path"      : str(config["file_path"]["log_path"]),
+        "int_path"      : str(config["file_path"]["int_path"]),
+        "index_path"    : str(config["file_path"]["index_path"]),
+        "server_passwd" : str(config["sql_user"]["pass"]),
+        "server_user"   : str(config["sql_user"]["name"]),
+        "server_IP"     : str(config["sql_user"]["server"]),
+        "server_port"   : str(config["sql_user"]["port"]),
+        "server_db"     : str(config["sql_user"]["db_name"]),
+        "int_desc"      : str(config["oid"]["inter_desc"]),
+        "int_name"      : str(config["oid"]["inter_name"]),
+        "int_octet"     : str(config["oid"]["inter_octet"]),
+        "device_uptime" : str(config["oid"]["uptime"]),
+        "comm_string"   : str(config["oid"]["c_string"]),
         }
-
-    log_path = config_v["ini"][9]
 
     print("Creating index report...")
     log_text = index_report.index(cisco_devices.interface_buildings(),
@@ -46,43 +44,41 @@ def main():
 
     try:
         cnx = mysql.connector.connect(
-                user=config_v["ini"][7],
-                password=config_v["ini"][8],
-                host= "MYSQL SERVER IP HERE",
-                database="int_reclaim",
-                port= 3306
-                )
+            user        = config_v["server_user"],
+            password    = config_v["server_passwd"],
+            host        = config_v["server_IP"],
+            database    = config_v["server_db"],
+            port        = config_v["server_port"]
+            )
 
         please = cnx.cursor()
 
         print("Creating index tables....")
-        index_table.json_load(config_v["ini"][4], please)
+        index_table.json_load(config_v["index_path"], please)
 
         print("Creating description tables....")
-        desc_table.json_load(config_v["ini"][5], please)
+        desc_table.json_load(config_v["int_path"], please)
 
         print("Compiling data into final tables....")
-        final_table.json_load(config_v["ini"][4], please)
+        final_table.json_load(config_v["index_path"], please)
 
         cnx.commit()
         cnx.close()
 
         date = datetime.datetime.now()
 
-        with open(f"{log_path}", 'w', encoding="UTF-8") as log:
+        with open(f"{config_v['log_path']}", 'w', encoding="UTF-8") as log:
 
             print(f"{date} - INT COUNTER - "
                     "DATABASE CONNECTION SUCCESS", file=log)
-            try:
-                print(log_text, file=log)
-                print(err_text, file=log)
-            except:
-                #only for debug purposes
-                pass
+
+            print(log_text, file=log)
+            print(err_text, file=log)
+
 
     except mysql.connector.Error as err:
         err_num = err.errno
-        err_check(err_num, log_path, log_text, err_text)
+        err_check(err_num, config_v['log_path'], log_text, err_text)
 
     print("Complete!")
 
@@ -94,9 +90,9 @@ def err_check(err, log_path, log_text, err_text):
     otherwise prints to console."""
 
     conn_err_list = [1045, 1049, 2003, 2005]
-    err_check = [i for i in conn_err_list if i == err]
+    err_checklist = [i for i in conn_err_list if i == err]
 
-    if err_check:
+    if err_checklist:
         date = datetime.datetime.now()
 
         with open(f"{log_path}", 'w', encoding="UTF-8") as log:
